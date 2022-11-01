@@ -21,7 +21,8 @@ fn handle_connection(mut stream: TcpStream) {
     if buffer.starts_with(get) {
         // handle response
         let contents = fs::read_to_string("hello.html").unwrap();
-
+        // add sleep to simulate slow response
+        std::thread::sleep(std::time::Duration::from_secs(5));
         let response = format!(
             "HTTP/1.1 200 OK \r\n Content-Length: {}\r\n\r\n{}",
             contents.len(),
@@ -35,7 +36,7 @@ fn handle_connection(mut stream: TcpStream) {
         stream.flush().unwrap();
         println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
     } else {
-        //some other request return 404
+        //some other request return 404    
         let status_line = "HTTP/1.1 404 NOT FOUND";
         let contents = fs::read_to_string("404.html").unwrap();
         let response = format!("{}\r\nContent-Length: {}\r\n\r\n{}", status_line, contents.len(), contents);
@@ -44,3 +45,4 @@ fn handle_connection(mut stream: TcpStream) {
         stream.flush().unwrap();
     }
 }
+
